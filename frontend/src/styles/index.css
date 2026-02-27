@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink-50 text-ink-800 dark:bg-ink-950 dark:text-ink-200;
+    @apply font-sans;
+  }
+
+  /* Selection styles */
+  ::selection {
+    @apply bg-accent-200 text-ink-900;
+  }
+
+  ::-moz-selection {
+    @apply bg-accent-200 text-ink-900;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-300 dark:bg-ink-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-400 dark:bg-ink-600;
+  }
+
+  /* Focus styles */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-accent-500 ring-offset-2 ring-offset-ink-50 dark:ring-offset-ink-950;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 dark:bg-ink-900/80 backdrop-blur-md;
+  }
+
+  .glass-subtle {
+    @apply bg-white/60 dark:bg-ink-900/60 backdrop-blur-sm;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white dark:bg-ink-900 rounded-2xl shadow-soft border border-ink-200 dark:border-ink-800;
+  }
+
+  .card-hover {
+    @apply hover:shadow-soft-lg hover:border-ink-200 dark:hover:border-ink-700 transition-all duration-300;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-xl font-medium transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent-500 text-white hover:bg-accent-600;
+    @apply focus:ring-accent-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-ink-100 dark:bg-ink-800 text-ink-700 dark:text-ink-200;
+    @apply hover:bg-ink-200 dark:hover:bg-ink-700;
+    @apply focus:ring-ink-300;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-ink-700 dark:text-ink-300;
+    @apply hover:bg-ink-100 dark:hover:bg-ink-800;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-ink-200 dark:border-ink-700 bg-transparent;
+    @apply text-ink-700 dark:text-ink-300;
+    @apply hover:border-ink-300 dark:hover:border-ink-600 hover:bg-ink-50 dark:hover:bg-ink-900;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm rounded-lg;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg rounded-2xl;
+  }
+
+  .btn-icon {
+    @apply p-2 rounded-xl;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl;
+    @apply bg-white dark:bg-ink-900;
+    @apply border border-ink-200 dark:border-ink-700;
+    @apply text-ink-800 dark:text-ink-200;
+    @apply placeholder:text-ink-400 dark:placeholder:text-ink-500;
+    @apply focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20;
+    @apply transition-all duration-200;
+  }
+
+  .input-error {
+    @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-ink-700 dark:text-ink-300 mb-2;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-accent-100 dark:bg-accent-900/30 text-accent-700 dark:text-accent-300;
+  }
+
+  .badge-secondary {
+    @apply badge bg-ink-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
+  }
+
+  /* Link styles */
+  .link {
+    @apply text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300;
+    @apply underline-offset-2 hover:underline transition-colors;
+  }
+
+  /* Tag styles */
+  .tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply bg-ink-200 dark:bg-ink-800 text-ink-700 dark:text-ink-300;
+    @apply hover:bg-ink-300 dark:hover:bg-ink-700 transition-colors;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply bg-ink-200 dark:bg-ink-800 animate-pulse rounded;
+  }
+
+  /* Divider */
+  .divider {
+    @apply h-px bg-ink-300 dark:bg-ink-700 my-6;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent-500 to-accent-600 bg-clip-text text-transparent;
+  }
+
+  /* Hide scrollbar */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Prose adjustments for markdown */
+  .prose-ink {
+    @apply prose prose-stone dark:prose-invert max-w-none;
+    @apply prose-headings:font-serif;
+    @apply prose-a:text-accent-600 dark:prose-a:text-accent-400;
+    @apply prose-blockquote:border-l-accent-400;
+    @apply prose-code:bg-ink-100 dark:prose-code:bg-ink-800 prose-code:rounded prose-code:px-1;
+    @apply prose-pre:bg-ink-900 prose-pre:rounded-xl;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+/* Editor specific styles */
+.editor-content {
+  @apply font-mono text-sm leading-relaxed;
+}
+
+.editor-content textarea {
+  @apply w-full h-full resize-none bg-transparent outline-none;
+  @apply font-mono text-ink-800 dark:text-ink-200;
+  tab-size: 2;
+}
+
+/* Markdown preview styles */
+.markdown-preview {
+  @apply prose prose-lg max-w-none;
+  @apply dark:prose-invert;
+}
+
+.markdown-preview h1 {
+  @apply text-3xl font-bold font-serif text-ink-900 dark:text-ink-100 mt-8 mb-4;
+}
+
+.markdown-preview h2 {
+  @apply text-2xl font-semibold font-serif text-ink-900 dark:text-ink-100 mt-6 mb-3;
+}
+
+.markdown-preview h3 {
+  @apply text-xl font-semibold text-ink-800 dark:text-ink-200 mt-5 mb-2;
+}
+
+.markdown-preview p {
+  @apply text-ink-700 dark:text-ink-300 leading-relaxed mb-4;
+}
+
+.markdown-preview a {
+  @apply text-accent-600 dark:text-accent-400 hover:underline;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply my-4 pl-6;
+}
+
+.markdown-preview li {
+  @apply text-ink-700 dark:text-ink-300 mb-2;
+}
+
+.markdown-preview blockquote {
+  @apply border-l-4 border-accent-400 pl-4 italic text-ink-600 dark:text-ink-400 my-4;
+}
+
+.markdown-preview pre {
+  @apply bg-ink-900 text-ink-100 rounded-xl p-4 overflow-x-auto my-4;
+}
+
+.markdown-preview code {
+  @apply bg-ink-100 dark:bg-ink-800 text-ink-800 dark:text-ink-200 px-1.5 py-0.5 rounded text-sm;
+}
+
+.markdown-preview pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown-preview img {
+  @apply rounded-xl my-6;
+}
+
+.markdown-preview table {
+  @apply w-full border-collapse my-6;
+}
+
+.markdown-preview th {
+  @apply bg-ink-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300 font-semibold text-left px-4 py-2 border border-ink-200 dark:border-ink-700;
+}
+
+.markdown-preview td {
+  @apply px-4 py-2 border border-ink-200 dark:border-ink-700 text-ink-600 dark:text-ink-400;
+}
+
+.markdown-preview hr {
+  @apply my-8 border-ink-200 dark:border-ink-800;
+}
