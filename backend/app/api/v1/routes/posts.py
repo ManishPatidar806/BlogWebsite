@@ -12,7 +12,8 @@ from app.auth.auth import get_current_active_user, get_current_writer, get_optio
 from app.models.models import User, PostStatus
 from app.schemas.schemas import (
     PostCreate, PostUpdate, PostResponse, PostWithRelations,
-    PostListResponse, DraftCreate, DraftResponse, MessageResponse
+    PostListResponse, DraftCreate, DraftResponse, MessageResponse,
+    PostStatusEnum
 )
 from app.services.post_service import PostService
 
@@ -172,7 +173,7 @@ async def get_post_by_slug(
         )
     
     # Only allow viewing published posts or own drafts
-    if post.status != PostStatus.PUBLISHED:
+    if post.status != PostStatusEnum.PUBLISHED:
         if not current_user or post.author_id != current_user.id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -204,7 +205,7 @@ async def get_post(
         )
     
     # Only allow viewing published posts or own drafts
-    if post.status != PostStatus.PUBLISHED:
+    if post.status != PostStatusEnum.PUBLISHED:
         if not current_user or post.author_id != current_user.id:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

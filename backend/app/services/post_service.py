@@ -115,7 +115,10 @@ class PostService:
         is_admin: bool = False
     ) -> Optional[Post]:
         """Update an existing post"""
-        query = select(Post).where(Post.id == post_id)
+        query = select(Post).options(
+            selectinload(Post.tags),
+            selectinload(Post.categories)
+        ).where(Post.id == post_id)
         if not is_admin:
             query = query.where(Post.author_id == author_id)
         

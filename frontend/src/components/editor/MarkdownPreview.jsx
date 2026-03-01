@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import mermaid from 'mermaid'
+import { Play } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 
 // Configure Mermaid
@@ -12,6 +13,118 @@ mermaid.initialize({
   theme: 'default',
   securityLevel: 'loose',
 })
+
+// Video embed component
+function VideoEmbed({ url, title }) {
+  const [isPlaying, setIsPlaying] = useState(false)
+  
+  // Parse video URL to get embed info
+  const getVideoInfo = (url) => {
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+    if (ytMatch) {
+      return {
+        type: 'youtube',
+        id: ytMatch[1],
+        embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`,
+        thumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`
+      }
+    }
+    
+    // Vimeo
+    const vimeoMatch = url.match(/(?:vimeo\.com\/)([0-9]+)/)
+    if (vimeoMatch) {
+      return {
+        type: 'vimeo',
+        id: vimeoMatch[1],
+        embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`,
+        thumbnailUrl: null
+      }
+    }
+    
+    // Direct video URL (mp4, webm, etc.)
+    if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      return {
+        type: 'direct',
+        url: url
+      }
+    }
+    
+    return null
+  }
+  
+  const videoInfo = getVideoInfo(url)
+  
+  if (!videoInfo) {
+    return (
+      <div className="my-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+        <p className="text-red-600 dark:text-red-400 text-sm">Invalid video URL: {url}</p>
+      </div>
+    )
+  }
+  
+  // Direct video player
+  if (videoInfo.type === 'direct') {
+    return (
+      <figure className="my-6">
+        <video
+          controls
+          className="w-full rounded-lg max-h-[500px] bg-ink-900"
+          preload="metadata"
+        >
+          <source src={url} type={`video/${url.split('.').pop()}`} />
+          Your browser does not support the video tag.
+        </video>
+        {title && (
+          <figcaption className="text-center text-sm text-ink-500 mt-2">
+            {title}
+          </figcaption>
+        )}
+      </figure>
+    )
+  }
+  
+  // Embedded video (YouTube, Vimeo)
+  return (
+    <figure className="my-6">
+      <div className="relative aspect-video bg-ink-900 rounded-lg overflow-hidden">
+        {!isPlaying && videoInfo.thumbnailUrl ? (
+          <>
+            <img
+              src={videoInfo.thumbnailUrl}
+              alt={title || 'Video thumbnail'}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none'
+              }}
+            />
+            <button
+              onClick={() => setIsPlaying(true)}
+              className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
+            >
+              <div className="w-16 h-16 flex items-center justify-center bg-red-600 rounded-full group-hover:scale-110 transition-transform">
+                <Play className="w-8 h-8 text-white ml-1" fill="white" />
+              </div>
+            </button>
+          </>
+        ) : (
+          <iframe
+            src={isPlaying ? videoInfo.embedUrl : videoInfo.embedUrl.replace('autoplay=1', 'autoplay=0')}
+            title={title || 'Video'}
+            className="absolute inset-0 w-full h-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        )}
+      </div>
+      {title && (
+        <figcaption className="text-center text-sm text-ink-500 mt-2">
+          {title}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
 
 // Mermaid diagram component
 function MermaidDiagram({ code }) {
@@ -105,18 +218,6 @@ export default function MarkdownPreview({ content }) {
             </p>
           ),
           
-          // Links
-          a: ({ href, children }) => (
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent-600 dark:text-accent-400 hover:underline"
-            >
-              {children}
-            </a>
-          ),
-          
           // Code blocks with syntax highlighting
           code: ({ inline, className, children, ...props }) => {
             const match = /language-(\w+)/.exec(className || '')
@@ -203,22 +304,65 @@ export default function MarkdownPreview({ content }) {
             </td>
           ),
           
-          // Images
-          img: ({ src, alt }) => (
-            <figure className="my-6">
-              <img
-                src={src}
-                alt={alt}
-                className="rounded-lg max-w-full h-auto mx-auto"
-                loading="lazy"
-              />
-              {alt && (
-                <figcaption className="text-center text-sm text-ink-500 mt-2">
-                  {alt}
-                </figcaption>
-              )}
-            </figure>
-          ),
+          // Images and Videos
+          img: ({ src, alt }) => {
+            // Check if this is a video URL
+            const isVideoUrl = src && (
+              src.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
+              src.match(/(?:vimeo\.com\/)([0-9]+)/) ||
+              src.match(/\.(mp4|webm|ogg)$/i)
+            )
+            
+            if (isVideoUrl) {
+              return <VideoEmbed url={src} title={alt} />
+            }
+            
+            return (
+              <figure className="my-6">
+                <img
+                  src={src}
+                  alt={alt}
+                  className="rounded-lg max-w-full h-auto mx-auto"
+                  loading="lazy"
+                />
+                {alt && (
+                  <figcaption className="text-center text-sm text-ink-500 mt-2">
+                    {alt}
+                  </figcaption>
+                )}
+              </figure>
+            )
+          },
+          
+          // Links - detect video links and render as video embeds
+          a: ({ href, children }) => {
+            // Check if this is a video link that should be embedded
+            const isVideoUrl = href && (
+              href.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/) ||
+              href.match(/(?:vimeo\.com\/)([0-9]+)/) ||
+              href.match(/\.(mp4|webm|ogg)$/i)
+            )
+            
+            // Check if the link text indicates it should be embedded (e.g., "[video:Title](url)")
+            const childText = typeof children === 'string' ? children : children?.[0]
+            const shouldEmbed = childText?.toString().startsWith('video:')
+            
+            if (isVideoUrl && shouldEmbed) {
+              const title = childText.toString().replace('video:', '').trim()
+              return <VideoEmbed url={href} title={title} />
+            }
+            
+            return (
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent-600 dark:text-accent-400 hover:underline"
+              >
+                {children}
+              </a>
+            )
+          },
           
           // Horizontal rule
           hr: () => (

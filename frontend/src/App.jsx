@@ -20,6 +20,12 @@ const Bookmarks = lazy(() => import('./pages/Bookmarks'))
 const Settings = lazy(() => import('./pages/Settings'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
+// LMS Course pages
+const CourseView = lazy(() => import('./pages/CourseView'))
+const CourseManager = lazy(() => import('./pages/CourseManager'))
+const LessonManager = lazy(() => import('./pages/LessonManager'))
+const LessonEditor = lazy(() => import('./pages/LessonEditor'))
+
 function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
@@ -34,11 +40,13 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* Protected routes with dashboard layout */}
-        <Route element={<ProtectedRoute />}>
+        {/* Writer-only routes with dashboard layout */}
+        <Route element={<ProtectedRoute requiredRole="writer" />}>
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/my-posts" element={<MyPosts />} />
+            <Route path="/courses" element={<CourseManager />} />
+            <Route path="/courses/:courseId/lessons" element={<LessonManager />} />
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
@@ -46,7 +54,15 @@ function App() {
           {/* Editor has its own fullscreen layout */}
           <Route path="/editor" element={<Editor />} />
           <Route path="/editor/:postId" element={<Editor />} />
+          
+          {/* Lesson Editor - fullscreen layout */}
+          <Route path="/courses/:courseId/lessons/new" element={<LessonEditor />} />
+          <Route path="/courses/:courseId/lessons/:lessonId/edit" element={<LessonEditor />} />
         </Route>
+
+        {/* LMS Course pages - no main layout */}
+        <Route path="/learn/:courseSlug" element={<CourseView />} />
+        <Route path="/learn/:courseSlug/:lessonSlug" element={<CourseView />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

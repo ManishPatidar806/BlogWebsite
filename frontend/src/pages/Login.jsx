@@ -50,10 +50,10 @@ export default function Login() {
             </div>
           </Link>
           <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-100">
-            Welcome back
+            Writer Sign In
           </h1>
           <p className="text-ink-600 dark:text-ink-400 mt-2">
-            Sign in to your account to continue
+            Sign in to manage your articles
           </p>
         </div>
 

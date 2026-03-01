@@ -183,6 +183,136 @@ class CategoryResponse(CategoryBase):
     slug: str
     parent_id: Optional[UUID]
     created_at: datetime
+    posts_count: int = 0
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CategoryWithPosts(CategoryResponse):
+    """Category with posts list for W3Schools-style tutorial view"""
+    posts: List["PostSidebarItem"] = []
+
+
+class PostSidebarItem(BaseModel):
+    """Minimal post info for sidebar (W3Schools-style)"""
+    id: UUID
+    title: str
+    slug: str
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============== LMS Course Schemas ==============
+
+class CourseBase(BaseModel):
+    """Base course schema"""
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    icon: Optional[str] = Field(None, max_length=50)
+    cover_image: Optional[str] = Field(None, max_length=2000)
+
+
+class CourseCreate(CourseBase):
+    """Course creation schema"""
+    is_published: bool = False
+
+
+class CourseUpdate(BaseModel):
+    """Course update schema"""
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    cover_image: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+class CourseResponse(CourseBase):
+    """Course response schema"""
+    id: UUID
+    author_id: UUID
+    slug: str
+    is_published: bool
+    created_at: datetime
+    updated_at: datetime
+    lessons_count: int = 0
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CourseWithAuthor(CourseResponse):
+    """Course with author info"""
+    author: Optional["UserResponse"] = None
+
+
+class CourseSidebarItem(BaseModel):
+    """Minimal course info for lists"""
+    id: UUID
+    title: str
+    slug: str
+    icon: Optional[str]
+    lessons_count: int = 0
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============== LMS Lesson Schemas ==============
+
+class LessonBase(BaseModel):
+    """Base lesson schema"""
+    title: str = Field(..., min_length=1, max_length=255)
+    content: str = Field(..., min_length=1)
+    excerpt: Optional[str] = None
+
+
+class LessonCreate(LessonBase):
+    """Lesson creation schema"""
+    course_id: UUID
+    is_published: bool = False
+
+
+class LessonUpdate(BaseModel):
+    """Lesson update schema"""
+    title: Optional[str] = Field(None, min_length=1, max_length=255)
+    content: Optional[str] = None
+    excerpt: Optional[str] = None
+    is_published: Optional[bool] = None
+
+
+class LessonResponse(BaseModel):
+    """Lesson response schema"""
+    id: UUID
+    course_id: UUID
+    title: str
+    slug: str
+    excerpt: Optional[str]
+    order: int
+    is_published: bool
+    reading_time: int
+    created_at: datetime
+    updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LessonWithContent(LessonResponse):
+    """Lesson with full content"""
+    content: str
+
+
+class LessonSidebarItem(BaseModel):
+    """Minimal lesson info for sidebar"""
+    id: UUID
+    title: str
+    slug: str
+    order: int
+    is_published: bool
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CourseWithLessons(CourseWithAuthor):
+    """Course with lessons list for LMS view"""
+    lessons: List[LessonSidebarItem] = []
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -403,3 +533,6 @@ class ErrorResponse(BaseModel):
 # Update forward references
 UserWithProfile.model_rebuild()
 CommentResponse.model_rebuild()
+CategoryWithPosts.model_rebuild()
+CourseWithAuthor.model_rebuild()
+CourseWithLessons.model_rebuild()

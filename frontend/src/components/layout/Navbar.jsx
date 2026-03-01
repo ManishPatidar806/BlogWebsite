@@ -85,10 +85,10 @@ export default function Navbar() {
               ) : (
                 <div className="hidden sm:flex items-center gap-2">
                   <Link to="/login" className="btn-ghost btn-sm">
-                    Sign In
+                    Writer Sign In
                   </Link>
                   <Link to="/register" className="btn-primary btn-sm">
-                    Get Started
+                    Become a Writer
                   </Link>
                 </div>
               )}
@@ -110,29 +110,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Search bar */}
-      <AnimatePresence>
-        {searchOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="glass border-b border-ink-200/50 dark:border-ink-800/50"
-          >
-            <div className="max-w-2xl mx-auto px-4 py-4">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-400" />
-                <input
-                  type="search"
-                  placeholder="Search posts, tags, authors..."
-                  className="input pl-12"
-                  autoFocus
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Mobile menu */}
       <AnimatePresence>

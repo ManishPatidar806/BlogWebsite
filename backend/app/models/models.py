@@ -92,6 +92,7 @@ class User(Base):
     likes: Mapped[List["Like"]] = relationship("Like", back_populates="user", cascade="all, delete-orphan")
     bookmarks: Mapped[List["Bookmark"]] = relationship("Bookmark", back_populates="user", cascade="all, delete-orphan")
     refresh_tokens: Mapped[List["RefreshToken"]] = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+    courses: Mapped[List["Course"]] = relationship("Course", back_populates="author", cascade="all, delete-orphan")
 
 
 class Profile(Base):
@@ -200,6 +201,56 @@ class Category(Base):
     # Relationships
     posts: Mapped[List["Post"]] = relationship("Post", secondary=post_categories, back_populates="categories")
     children: Mapped[List["Category"]] = relationship("Category", backref="parent", remote_side=[id])
+
+
+class Course(Base):
+    """LMS Course - container for lessons owned by a writer"""
+    __tablename__ = "courses"
+    
+    id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
+    author_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(300), unique=True, nullable=False, index=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    icon: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # Emoji or icon name
+    cover_image: Mapped[Optional[str]] = mapped_column(String(2000), nullable=True)
+    is_published: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    author: Mapped["User"] = relationship("User", back_populates="courses")
+    lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="course", cascade="all, delete-orphan", order_by="Lesson.order")
+    
+    __table_args__ = (
+        Index("idx_courses_author", "author_id"),
+    )
+
+
+class Lesson(Base):
+    """LMS Lesson - individual learning content within a course"""
+    __tablename__ = "lessons"
+    
+    id: Mapped[uuid.UUID] = mapped_column(GUID(), primary_key=True, default=uuid.uuid4)
+    course_id: Mapped[uuid.UUID] = mapped_column(GUID(), ForeignKey("courses.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    slug: Mapped[str] = mapped_column(String(300), nullable=False, index=True)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    excerpt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    order: Mapped[int] = mapped_column(Integer, default=0)  # For ordering in sidebar
+    is_published: Mapped[bool] = mapped_column(Boolean, default=False)
+    reading_time: Mapped[int] = mapped_column(Integer, default=0)  # Minutes
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    course: Mapped["Course"] = relationship("Course", back_populates="lessons")
+    
+    # Unique constraint: slug must be unique within a course
+    __table_args__ = (
+        Index("idx_lesson_course_slug", "course_id", "slug", unique=True),
+        Index("idx_lesson_course_order", "course_id", "order"),
+    )
 
 
 class Comment(Base):

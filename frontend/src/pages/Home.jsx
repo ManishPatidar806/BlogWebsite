@@ -97,11 +97,11 @@ export default function Home() {
               ) : (
                 <>
                   <Link to="/register" className="btn-primary btn-lg flex items-center gap-2">
-                    Get Started Free
+                    Start Writing
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                   <Link to="/blog" className="btn-outline btn-lg">
-                    Explore Articles
+                    Read Articles
                   </Link>
                 </>
               )}

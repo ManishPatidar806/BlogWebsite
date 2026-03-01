@@ -114,6 +114,10 @@ export const categoryService = {
   create: (data) => api.post('/categories', data),
   update: (id, data) => api.put(`/categories/${id}`, data),
   delete: (id) => api.delete(`/categories/${id}`),
+  // W3Schools-style tutorial navigation
+  getBySlugWithPosts: (slug) => api.get(`/categories/slug/${slug}`),
+  getPostInCategory: (categorySlug, postSlug) => api.get(`/categories/slug/${categorySlug}/post/${postSlug}`),
+  getFirstPostInCategory: (categorySlug) => api.get(`/categories/slug/${categorySlug}/first`),
 }
 
 export const commentService = {
@@ -147,4 +151,28 @@ export const uploadService = {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
   },
+}
+
+// LMS Course and Lesson services
+export const courseService = {
+  // Public routes
+  getPublicCourses: () => api.get('/courses/public'),
+  getCourseBySlug: (slug) => api.get(`/courses/slug/${slug}`),
+  getLesson: (courseSlug, lessonSlug) => api.get(`/courses/slug/${courseSlug}/lesson/${lessonSlug}`),
+  getFirstLesson: (courseSlug) => api.get(`/courses/slug/${courseSlug}/first`),
+  
+  // Writer management routes
+  getMyCourses: () => api.get('/courses/my'),
+  getCourseById: (id) => api.get(`/courses/${id}`),
+  createCourse: (data) => api.post('/courses', data),
+  updateCourse: (id, data) => api.put(`/courses/${id}`, data),
+  deleteCourse: (id) => api.delete(`/courses/${id}`),
+  
+  // Lesson management
+  getCourseLessons: (courseId) => api.get(`/courses/${courseId}/lessons`),
+  getLessonById: (lessonId) => api.get(`/courses/lessons/${lessonId}`),
+  createLesson: (data) => api.post('/courses/lessons', data),
+  updateLesson: (lessonId, data) => api.put(`/courses/lessons/${lessonId}`, data),
+  deleteLesson: (lessonId) => api.delete(`/courses/lessons/${lessonId}`),
+  reorderLesson: (lessonId, newOrder) => api.post(`/courses/lessons/${lessonId}/reorder`, null, { params: { new_order: newOrder } }),
 }

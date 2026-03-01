@@ -153,13 +153,15 @@ export default function PostDetail() {
   const isAuthor = user?.id === post.author?.id
 
   return (
-    <motion.article
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="py-8"
-    >
-      {/* Back button */}
-      <div className="container mb-8">
+    <div className="min-h-screen">
+      {/* Main Content */}
+      <motion.article
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="py-8"
+      >
+        {/* Back button */}
+        <div className="container mb-8">
         <button
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-ink-100 transition-colors"
@@ -421,7 +423,8 @@ export default function PostDetail() {
           </section>
         </div>
       </div>
-    </motion.article>
+      </motion.article>
+    </div>
   )
 }
 

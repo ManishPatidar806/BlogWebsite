@@ -9,7 +9,8 @@ import {
   PenSquare,
   Menu,
   X,
-  LogOut
+  LogOut,
+  GraduationCap
 } from 'lucide-react'
 
 import { useAuth } from '../context/AuthContext'
@@ -19,13 +20,14 @@ import Avatar from '../components/ui/Avatar'
 const sidebarLinks = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/my-posts', icon: FileText, label: 'My Posts' },
+  { to: '/courses', icon: GraduationCap, label: 'Courses' },
   { to: '/bookmarks', icon: Bookmark, label: 'Bookmarks' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { user, logout, isWriter } = useAuth()
+  const { user, logout } = useAuth()
 
   return (
     <div className="min-h-screen bg-ink-50 dark:bg-ink-950">
@@ -95,18 +97,16 @@ export default function DashboardLayout() {
         </nav>
 
         {/* New Post Button */}
-        {isWriter && (
-          <div className="px-4 mt-4">
-            <NavLink
-              to="/editor"
-              className="btn-primary w-full flex items-center justify-center gap-2"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <PenSquare className="w-4 h-4" />
-              New Post
-            </NavLink>
-          </div>
-        )}
+        <div className="px-4 mt-4">
+          <NavLink
+            to="/editor"
+            className="btn-primary w-full flex items-center justify-center gap-2"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <PenSquare className="w-4 h-4" />
+            New Post
+          </NavLink>
+        </div>
 
         {/* User section at bottom */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-ink-200 dark:border-ink-800">

@@ -19,10 +19,7 @@ from app.api.v1 import router as api_v1_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager for startup and shutdown events"""
-    # Startup
-    # Create database tables (in production, use Alembic migrations)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Startup - Alembic handles migrations, no need for create_all
     yield
     # Shutdown
     await engine.dispose()

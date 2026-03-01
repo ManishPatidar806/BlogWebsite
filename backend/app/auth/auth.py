@@ -23,6 +23,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 
 def hash_password(password: str) -> str:
@@ -154,7 +155,7 @@ async def get_current_admin(
 
 
 async def get_optional_current_user(
-    token: Optional[str] = Depends(oauth2_scheme),
+    token: Optional[str] = Depends(oauth2_scheme_optional),
     db: AsyncSession = Depends(get_db)
 ) -> Optional[User]:
     """Get current user if authenticated, otherwise None"""

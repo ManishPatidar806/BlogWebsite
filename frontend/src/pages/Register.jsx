@@ -11,7 +11,7 @@ export default function Register() {
     username: '',
     password: '',
     confirmPassword: '',
-    role: 'reader',
+    role: 'writer',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -76,10 +76,10 @@ export default function Register() {
             </div>
           </Link>
           <h1 className="text-2xl font-bold text-ink-900 dark:text-ink-100">
-            Create your account
+            Become a Writer
           </h1>
           <p className="text-ink-600 dark:text-ink-400 mt-2">
-            Start your writing journey today
+            Create an account to share your stories
           </p>
         </div>
 
@@ -179,36 +179,6 @@ export default function Register() {
                   placeholder="••••••••"
                   required
                 />
-              </div>
-            </div>
-
-            <div>
-              <label className="label">I want to...</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, role: 'reader' }))}
-                  className={`p-4 rounded-xl border-2 text-center transition-all ${
-                    formData.role === 'reader'
-                      ? 'border-accent-500 bg-accent-50 dark:bg-accent-900/20'
-                      : 'border-ink-200 dark:border-ink-700 hover:border-ink-300'
-                  }`}
-                >
-                  <span className="block font-medium text-ink-900 dark:text-ink-100">Read</span>
-                  <span className="text-xs text-ink-500">Discover great content</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFormData(prev => ({ ...prev, role: 'writer' }))}
-                  className={`p-4 rounded-xl border-2 text-center transition-all ${
-                    formData.role === 'writer'
-                      ? 'border-accent-500 bg-accent-50 dark:bg-accent-900/20'
-                      : 'border-ink-200 dark:border-ink-700 hover:border-ink-300'
-                  }`}
-                >
-                  <span className="block font-medium text-ink-900 dark:text-ink-100">Write</span>
-                  <span className="text-xs text-ink-500">Share my stories</span>
-                </button>
               </div>
             </div>
 

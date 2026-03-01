@@ -1,101 +1,98 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import {
-  Save, Eye, Edit3, Settings, ArrowLeft, 
-  Sparkles, Check, X, Upload, Clock,
+  Save, Eye, Edit3, ArrowLeft, Check, Clock,
   Bold, Italic, Heading1, Heading2, List,
-  ListOrdered, Quote, Code, Link2, Image,
-  Undo, Redo, Video
+  ListOrdered, Quote, Code, Link2, Image, Undo, Redo,
+  Video, Sparkles
 } from 'lucide-react'
 
-import { postService, aiService, uploadService } from '../services/api'
+import { courseService, uploadService, aiService } from '../services/api'
 import MarkdownPreview from '../components/editor/MarkdownPreview'
 import AIAssistant from '../components/editor/AIAssistant'
-import EditorSettings from '../components/editor/EditorSettings'
 
 // Get the base URL for uploaded images
 const API_URL = import.meta.env.VITE_API_URL || '/api/v1'
 const API_BASE = API_URL.replace('/api/v1', '')
 
-export default function Editor() {
-  const { postId } = useParams()
+export default function LessonEditor() {
+  const { courseId, lessonId } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const textareaRef = useRef(null)
-  const autoSaveTimeoutRef = useRef(null)
   const imageInputRef = useRef(null)
   
   // Editor state
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [excerpt, setExcerpt] = useState('')
-  const [coverImage, setCoverImage] = useState('')
-  const [status, setStatus] = useState('draft')
-  const [tags, setTags] = useState([])
-  const [categories, setCategories] = useState([])
+  const [isPublished, setIsPublished] = useState(false)
   
   // UI state
   const [view, setView] = useState('split') // 'edit' | 'split' | 'preview'
-  const [showSettings, setShowSettings] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   const [showAI, setShowAI] = useState(false)
   const [selectedText, setSelectedText] = useState('')
-  const [isSaving, setIsSaving] = useState(false)
-  const [lastSaved, setLastSaved] = useState(null)
-  const [hasChanges, setHasChanges] = useState(false)
   
   // History for undo/redo
   const [history, setHistory] = useState([])
   const [historyIndex, setHistoryIndex] = useState(-1)
 
-  // Load existing post if editing
-  const { data: existingPost, isLoading } = useQuery({
-    queryKey: ['post', postId],
-    queryFn: () => postService.getById(postId),
-    enabled: !!postId,
+  // Fetch course info
+  const { data: courseData } = useQuery({
+    queryKey: ['course', courseId],
+    queryFn: () => courseService.getCourseById(courseId),
+    enabled: !!courseId,
   })
 
-  // Initialize editor with existing post data
-  useEffect(() => {
-    if (existingPost?.data) {
-      const post = existingPost.data
-      setTitle(post.title)
-      setContent(post.content)
-      setExcerpt(post.excerpt || '')
-      setCoverImage(post.cover_image || '')
-      setStatus(post.status)
-      setTags(post.tags?.map(t => t.id) || [])
-      setCategories(post.categories?.map(c => c.id) || [])
-    }
-  }, [existingPost])
+  // Fetch existing lesson if editing
+  const { data: lessonData, isLoading } = useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: () => courseService.getLessonById(lessonId),
+    enabled: !!lessonId,
+  })
 
-  // Create/Update mutations
-  const saveMutation = useMutation({
-    mutationFn: (data) => {
-      if (postId) {
-        return postService.update(postId, data)
-      }
-      return postService.create(data)
-    },
+  const course = courseData?.data
+
+  // Initialize editor with existing lesson data
+  useEffect(() => {
+    if (lessonData?.data) {
+      const lesson = lessonData.data
+      setTitle(lesson.title)
+      setContent(lesson.content)
+      setExcerpt(lesson.excerpt || '')
+      setIsPublished(lesson.is_published)
+    }
+  }, [lessonData])
+
+  // Create lesson mutation
+  const createMutation = useMutation({
+    mutationFn: (data) => courseService.createLesson({ ...data, course_id: courseId }),
     onSuccess: (response) => {
-      setLastSaved(new Date())
-      setHasChanges(false)
-      toast.success(postId ? 'Post updated' : 'Post created')
-      if (!postId) {
-        navigate(`/editor/${response.data.id}`, { replace: true })
-      }
+      queryClient.invalidateQueries(['course', courseId])
+      toast.success('Lesson created')
+      navigate(`/courses/${courseId}/lessons`)
     },
     onError: (error) => {
-      toast.error(error.response?.data?.detail || 'Failed to save')
+      toast.error(error.response?.data?.detail || 'Failed to create lesson')
     },
   })
 
-  // Auto-save draft
-  const autoSaveDraft = useMutation({
-    mutationFn: (data) => postService.saveDraft(data),
+  // Update lesson mutation
+  const updateMutation = useMutation({
+    mutationFn: (data) => courseService.updateLesson(lessonId, data),
     onSuccess: () => {
-      setLastSaved(new Date())
+      queryClient.invalidateQueries(['course', courseId])
+      queryClient.invalidateQueries(['lesson', lessonId])
+      toast.success('Lesson updated')
+      setHasChanges(false)
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.detail || 'Failed to update lesson')
     },
   })
 
@@ -103,7 +100,6 @@ export default function Editor() {
   const uploadImageMutation = useMutation({
     mutationFn: (file) => uploadService.uploadImage(file),
     onSuccess: (response) => {
-      // Prepend base URL to the relative path
       const imageUrl = response.data.url.startsWith('http') 
         ? response.data.url 
         : `${API_BASE}${response.data.url}`
@@ -125,22 +121,6 @@ export default function Editor() {
   // Word count and reading time
   const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0
   const readingTime = Math.max(1, Math.ceil(wordCount / 200))
-
-  // Auto-save effect
-  useEffect(() => {
-    if (hasChanges && (title || content)) {
-      clearTimeout(autoSaveTimeoutRef.current)
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        autoSaveDraft.mutate({
-          post_id: postId || null,
-          title: title || 'Untitled',
-          content: content,
-        })
-      }, 30000) // Auto-save every 30 seconds
-    }
-    
-    return () => clearTimeout(autoSaveTimeoutRef.current)
-  }, [title, content, hasChanges, postId])
 
   // Track changes
   const handleTitleChange = (e) => {
@@ -209,8 +189,8 @@ export default function Editor() {
     { icon: Video, action: () => {
       const url = prompt('Enter video URL (YouTube, Vimeo, or direct video link):')
       if (url) {
-        const title = prompt('Enter video title (optional):') || 'Video'
-        insertText(`[video:${title}](${url})`)
+        const videoTitle = prompt('Enter video title (optional):') || 'Video'
+        insertText(`[video:${videoTitle}](${url})`)
       }
     }, tooltip: 'Embed Video' },
   ]
@@ -230,8 +210,8 @@ export default function Editor() {
     }
   }
 
-  // Save post
-  const handleSave = (publishStatus = status) => {
+  // Save lesson
+  const handleSave = (publish = isPublished) => {
     if (!title.trim()) {
       toast.error('Title is required')
       return
@@ -242,17 +222,22 @@ export default function Editor() {
     }
 
     setIsSaving(true)
-    saveMutation.mutate({
+    const data = {
       title: title.trim(),
       content: content.trim(),
       excerpt: excerpt.trim() || null,
-      cover_image: coverImage.trim() || null,
-      status: publishStatus,
-      tag_ids: tags,
-      category_ids: categories,
-    }, {
-      onSettled: () => setIsSaving(false),
-    })
+      is_published: publish,
+    }
+
+    if (lessonId) {
+      updateMutation.mutate(data, {
+        onSettled: () => setIsSaving(false),
+      })
+    } else {
+      createMutation.mutate(data, {
+        onSettled: () => setIsSaving(false),
+      })
+    }
   }
 
   // Apply AI suggestion
@@ -291,28 +276,25 @@ export default function Editor() {
       <header className="flex-shrink-0 h-14 border-b border-ink-200 dark:border-ink-800 bg-white dark:bg-ink-900 px-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            to="/my-posts"
+            to={`/courses/${courseId}/lessons`}
             className="p-2 rounded-lg hover:bg-ink-100 dark:hover:bg-ink-800 text-ink-700 dark:text-ink-300"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           
           <div className="hidden sm:flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400">
+            {course && (
+              <>
+                <span className="font-medium">{course.title}</span>
+                <span>•</span>
+              </>
+            )}
             <span>{wordCount} words</span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               {readingTime} min read
             </span>
-            {lastSaved && (
-              <>
-                <span>•</span>
-                <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
-                  <Check className="w-3.5 h-3.5" />
-                  Saved
-                </span>
-              </>
-            )}
           </div>
         </div>
 
@@ -354,18 +336,23 @@ export default function Editor() {
             <Sparkles className="w-5 h-5" />
           </button>
 
-          {/* Settings */}
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className={`btn-ghost btn-icon ${showSettings ? 'bg-ink-200 dark:bg-ink-700' : ''}`}
-            title="Post Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
+          {/* Publish checkbox */}
+          <label className="hidden sm:flex items-center gap-2 text-sm text-ink-600 dark:text-ink-400 mr-2">
+            <input
+              type="checkbox"
+              checked={isPublished}
+              onChange={(e) => {
+                setIsPublished(e.target.checked)
+                setHasChanges(true)
+              }}
+              className="w-4 h-4 rounded border-ink-300 text-accent-500 focus:ring-accent-500"
+            />
+            Publish
+          </label>
 
           {/* Save buttons */}
           <button
-            onClick={() => handleSave('draft')}
+            onClick={() => handleSave(false)}
             disabled={isSaving}
             className="btn-secondary btn-sm hidden sm:flex items-center gap-1"
           >
@@ -374,7 +361,7 @@ export default function Editor() {
           </button>
           
           <button
-            onClick={() => handleSave('published')}
+            onClick={() => handleSave(true)}
             disabled={isSaving}
             className="btn-primary btn-sm flex items-center gap-1"
           >
@@ -386,7 +373,7 @@ export default function Editor() {
             ) : (
               <>
                 <Check className="w-4 h-4" />
-                Publish
+                {lessonId ? 'Update' : 'Create'} & Publish
               </>
             )}
           </button>
@@ -473,8 +460,18 @@ export default function Editor() {
               type="text"
               value={title}
               onChange={handleTitleChange}
-              placeholder="Post title..."
+              placeholder="Lesson title..."
               className="w-full text-2xl sm:text-3xl font-bold text-ink-900 dark:text-ink-100 bg-transparent border-none outline-none placeholder:text-ink-400 dark:placeholder:text-ink-500 font-serif"
+            />
+            <input
+              type="text"
+              value={excerpt}
+              onChange={(e) => {
+                setExcerpt(e.target.value)
+                setHasChanges(true)
+              }}
+              placeholder="Brief description (optional)..."
+              className="w-full mt-2 text-sm text-ink-600 dark:text-ink-400 bg-transparent border-none outline-none placeholder:text-ink-400 dark:placeholder:text-ink-500"
             />
           </div>
           
@@ -485,7 +482,7 @@ export default function Editor() {
               value={content}
               onChange={handleContentChange}
               onSelect={handleTextSelect}
-              placeholder="Write your story in Markdown..."
+              placeholder="Write your lesson content in Markdown..."
               className="w-full h-full min-h-[500px] resize-none bg-transparent border-none outline-none text-ink-800 dark:text-ink-200 font-mono text-sm leading-relaxed placeholder:text-ink-400 dark:placeholder:text-ink-500"
               spellCheck="true"
             />
@@ -495,29 +492,15 @@ export default function Editor() {
         {/* Preview pane */}
         <div className={`flex-1 overflow-auto bg-white dark:bg-ink-950 ${view === 'edit' ? 'hidden' : ''}`}>
           <div className="max-w-3xl mx-auto p-8">
-            <h1 className="text-3xl sm:text-4xl font-bold text-ink-900 dark:text-ink-100 font-serif mb-8">
-              {title || 'Untitled Post'}
+            <h1 className="text-3xl sm:text-4xl font-bold text-ink-900 dark:text-ink-100 font-serif mb-4">
+              {title || 'Untitled Lesson'}
             </h1>
+            {excerpt && (
+              <p className="text-ink-600 dark:text-ink-400 mb-8">{excerpt}</p>
+            )}
             <MarkdownPreview content={content} />
           </div>
         </div>
-
-        {/* Settings panel */}
-        <AnimatePresence>
-          {showSettings && (
-            <EditorSettings
-              excerpt={excerpt}
-              setExcerpt={setExcerpt}
-              coverImage={coverImage}
-              setCoverImage={setCoverImage}
-              tags={tags}
-              setTags={setTags}
-              categories={categories}
-              setCategories={setCategories}
-              onClose={() => setShowSettings(false)}
-            />
-          )}
-        </AnimatePresence>
 
         {/* AI Assistant panel */}
         <AnimatePresence>
