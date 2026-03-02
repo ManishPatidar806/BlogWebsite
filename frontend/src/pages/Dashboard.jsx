@@ -44,6 +44,7 @@ export default function Dashboard() {
       icon: Eye,
       color: 'blue',
     },
+    /* Commented out like/comment stats
     {
       label: 'Total Likes',
       value: stats.total_likes || 0,
@@ -58,6 +59,7 @@ export default function Dashboard() {
       icon: MessageCircle,
       color: 'green',
     },
+    */
   ]
 
   const formatNumber = (num) => {

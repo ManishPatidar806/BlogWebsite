@@ -16,7 +16,7 @@ const Profile = lazy(() => import('./pages/Profile'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Editor = lazy(() => import('./pages/Editor'))
 const MyPosts = lazy(() => import('./pages/MyPosts'))
-const Bookmarks = lazy(() => import('./pages/Bookmarks'))
+// const Bookmarks = lazy(() => import('./pages/Bookmarks'))
 const Settings = lazy(() => import('./pages/Settings'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
@@ -47,7 +47,9 @@ function App() {
             <Route path="/my-posts" element={<MyPosts />} />
             <Route path="/courses" element={<CourseManager />} />
             <Route path="/courses/:courseId/lessons" element={<LessonManager />} />
+            {/* Commented out bookmarks route
             <Route path="/bookmarks" element={<Bookmarks />} />
+            */}
             <Route path="/settings" element={<Settings />} />
           </Route>
           

@@ -19,6 +19,7 @@ export default function PostCard({ post, featured = false, compact = false, show
         </Link>
         <div className="mt-2 flex items-center justify-between text-xs text-ink-600 dark:text-ink-400">
           <span>{publishedDate}</span>
+          {/* Commented out like/comment stats
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <Heart className="w-3.5 h-3.5" />
@@ -29,6 +30,7 @@ export default function PostCard({ post, featured = false, compact = false, show
               {post.comments_count || 0}
             </span>
           </div>
+          */}
         </div>
       </article>
     )
@@ -106,7 +108,7 @@ export default function PostCard({ post, featured = false, compact = false, show
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats - Commented out like/bookmark/comment stats
         <div className="mt-3 pt-3 border-t border-ink-200 dark:border-ink-800 flex items-center justify-between text-xs text-ink-600 dark:text-ink-400">
           {showAuthor && <span>{publishedDate}</span>}
           
@@ -124,6 +126,7 @@ export default function PostCard({ post, featured = false, compact = false, show
             )}
           </div>
         </div>
+        */}
       </div>
     </article>
   )

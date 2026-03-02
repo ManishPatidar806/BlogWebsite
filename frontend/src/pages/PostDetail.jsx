@@ -260,7 +260,7 @@ export default function PostDetail() {
           </div>
 
           {/* Actions bar */}
-          <div className="flex items-center justify-between py-6 border-y border-ink-200 dark:border-ink-800 mb-12">
+          {/* <div className="flex items-center justify-between py-6 border-y border-ink-200 dark:border-ink-800 mb-12">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => {
@@ -339,7 +339,7 @@ export default function PostDetail() {
                 </motion.div>
               )}
             </div>
-          </div>
+          </div> */}
 
           {/* Author bio */}
           {post.author?.profile?.bio && (
@@ -369,13 +369,13 @@ export default function PostDetail() {
           )}
 
           {/* Comments section */}
-          <section id="comments" className="mb-12">
+          {/* <section id="comments" className="mb-12">
             <h2 className="text-2xl font-bold text-ink-900 dark:text-ink-100 mb-6">
               Comments ({comments.length})
             </h2>
 
             {/* Comment form */}
-            <form onSubmit={handleSubmitComment} className="mb-8">
+            {/* <form onSubmit={handleSubmitComment} className="mb-8">
               <textarea
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
@@ -394,10 +394,10 @@ export default function PostDetail() {
                   Post Comment
                 </button>
               </div>
-            </form>
+            </form> */}
 
             {/* Comments list */}
-            <div className="space-y-6">
+            {/* <div className="space-y-6">
               {comments.filter(c => !c.parent_id).map((comment) => (
                 <CommentCard
                   key={comment.id}
@@ -419,8 +419,8 @@ export default function PostDetail() {
                   Be the first to comment!
                 </p>
               )}
-            </div>
-          </section>
+            </div> */}
+          {/* </section> */} 
         </div>
       </div>
       </motion.article>
@@ -428,142 +428,142 @@ export default function PostDetail() {
   )
 }
 
-function CommentCard({
-  comment,
-  replies,
-  user,
-  replyingTo,
-  setReplyingTo,
-  replyText,
-  setReplyText,
-  onSubmitReply,
-  onDelete,
-  isAuthenticated,
-}) {
-  const [showActions, setShowActions] = useState(false)
-  const isAuthor = user?.id === comment.user?.id
+// function CommentCard({
+//   comment,
+//   replies,
+//   user,
+//   replyingTo,
+//   setReplyingTo,
+//   replyText,
+//   setReplyText,
+//   onSubmitReply,
+//   onDelete,
+//   isAuthenticated,
+// }) {
+//   const [showActions, setShowActions] = useState(false)
+//   const isAuthor = user?.id === comment.user?.id
 
-  return (
-    <div className="group">
-      <div className="flex gap-4">
-        <Avatar
-          src={comment.user?.profile?.avatar_url}
-          name={comment.user?.username}
-          size="md"
-        />
-        <div className="flex-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-ink-900 dark:text-ink-100">
-                {comment.user?.profile?.display_name || comment.user?.username}
-              </span>
-              <span className="text-sm text-ink-500">
-                {new Date(comment.created_at).toLocaleDateString()}
-              </span>
-            </div>
+//   return (
+//     <div className="group">
+//       <div className="flex gap-4">
+//         <Avatar
+//           src={comment.user?.profile?.avatar_url}
+//           name={comment.user?.username}
+//           size="md"
+//         />
+//         <div className="flex-1">
+//           <div className="flex items-center justify-between">
+//             <div className="flex items-center gap-2">
+//               <span className="font-medium text-ink-900 dark:text-ink-100">
+//                 {comment.user?.profile?.display_name || comment.user?.username}
+//               </span>
+//               <span className="text-sm text-ink-500">
+//                 {new Date(comment.created_at).toLocaleDateString()}
+//               </span>
+//             </div>
             
-            {isAuthor && (
-              <div className="relative">
-                <button
-                  onClick={() => setShowActions(!showActions)}
-                  className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-ink-100 dark:hover:bg-ink-800 transition-opacity"
-                >
-                  <MoreHorizontal className="w-4 h-4 text-ink-500" />
-                </button>
-                {showActions && (
-                  <div className="absolute right-0 top-full mt-1 bg-white dark:bg-ink-800 rounded-lg shadow-lg border border-ink-200 dark:border-ink-700 py-1 z-10">
-                    <button
-                      onClick={() => onDelete(comment.id)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-ink-100 dark:hover:bg-ink-700 w-full"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+//             {isAuthor && (
+//               <div className="relative">
+//                 <button
+//                   onClick={() => setShowActions(!showActions)}
+//                   className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-ink-100 dark:hover:bg-ink-800 transition-opacity"
+//                 >
+//                   <MoreHorizontal className="w-4 h-4 text-ink-500" />
+//                 </button>
+//                 {showActions && (
+//                   <div className="absolute right-0 top-full mt-1 bg-white dark:bg-ink-800 rounded-lg shadow-lg border border-ink-200 dark:border-ink-700 py-1 z-10">
+//                     <button
+//                       onClick={() => onDelete(comment.id)}
+//                       className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-ink-100 dark:hover:bg-ink-700 w-full"
+//                     >
+//                       <Trash2 className="w-4 h-4" />
+//                       Delete
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+//           </div>
           
-          <p className="text-ink-700 dark:text-ink-300 mt-1">
-            {comment.content}
-          </p>
+//           {/* <p className="text-ink-700 dark:text-ink-300 mt-1">
+//             {comment.content}
+//           </p> */}
           
-          <button
-            onClick={() => {
-              if (!isAuthenticated) {
-                toast.error('Please login to reply')
-                return
-              }
-              setReplyingTo(replyingTo === comment.id ? null : comment.id)
-            }}
-            className="text-sm text-accent-600 hover:text-accent-500 mt-2"
-          >
-            Reply
-          </button>
+//           {/* <button
+//             onClick={() => {
+//               if (!isAuthenticated) {
+//                 toast.error('Please login to reply')
+//                 return
+//               }
+//               setReplyingTo(replyingTo === comment.id ? null : comment.id)
+//             }}
+//             className="text-sm text-accent-600 hover:text-accent-500 mt-2"
+//           >
+//             Reply
+//           </button> */}
 
-          {/* Reply form */}
-          {replyingTo === comment.id && (
-            <form
-              onSubmit={(e) => onSubmitReply(e, comment.id)}
-              className="mt-3"
-            >
-              <textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Write a reply..."
-                rows={2}
-                className="input w-full resize-none text-sm"
-                autoFocus
-              />
-              <div className="flex gap-2 mt-2">
-                <button
-                  type="button"
-                  onClick={() => setReplyingTo(null)}
-                  className="btn-ghost btn-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!replyText.trim()}
-                  className="btn-primary btn-sm"
-                >
-                  Reply
-                </button>
-              </div>
-            </form>
-          )}
+//           {/* Reply form */}
+//           {/* {replyingTo === comment.id && (
+//             <form
+//               onSubmit={(e) => onSubmitReply(e, comment.id)}
+//               className="mt-3"
+//             >
+//               <textarea
+//                 value={replyText}
+//                 onChange={(e) => setReplyText(e.target.value)}
+//                 placeholder="Write a reply..."
+//                 rows={2}
+//                 className="input w-full resize-none text-sm"
+//                 autoFocus
+//               />
+//               <div className="flex gap-2 mt-2">
+//                 <button
+//                   type="button"
+//                   onClick={() => setReplyingTo(null)}
+//                   className="btn-ghost btn-sm"
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   type="submit"
+//                   disabled={!replyText.trim()}
+//                   className="btn-primary btn-sm"
+//                 >
+//                   Reply
+//                 </button>
+//               </div>
+//             </form>
+//           )} */}
 
-          {/* Replies */}
-          {replies.length > 0 && (
-            <div className="mt-4 pl-4 border-l-2 border-ink-200 dark:border-ink-700 space-y-4">
-              {replies.map((reply) => (
-                <div key={reply.id} className="flex gap-3">
-                  <Avatar
-                    src={reply.user?.profile?.avatar_url}
-                    name={reply.user?.username}
-                    size="sm"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-ink-900 dark:text-ink-100 text-sm">
-                        {reply.user?.profile?.display_name || reply.user?.username}
-                      </span>
-                      <span className="text-xs text-ink-500">
-                        {new Date(reply.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className="text-ink-700 dark:text-ink-300 text-sm">
-                      {reply.content}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
+//           {/* Replies */}
+//           {/* {replies.length > 0 && (
+//             <div className="mt-4 pl-4 border-l-2 border-ink-200 dark:border-ink-700 space-y-4">
+//               {replies.map((reply) => (
+//                 <div key={reply.id} className="flex gap-3">
+//                   <Avatar
+//                     src={reply.user?.profile?.avatar_url}
+//                     name={reply.user?.username}
+//                     size="sm"
+//                   />
+//                   <div>
+//                     <div className="flex items-center gap-2">
+//                       <span className="font-medium text-ink-900 dark:text-ink-100 text-sm">
+//                         {reply.user?.profile?.display_name || reply.user?.username}
+//                       </span>
+//                       <span className="text-xs text-ink-500">
+//                         {new Date(reply.created_at).toLocaleDateString()}
+//                       </span>
+//                     </div>
+//                     <p className="text-ink-700 dark:text-ink-300 text-sm">
+//                       {reply.content}
+//                     </p>
+//                   </div>
+//                 </div>
+//               ))}
+//             </div>
+//           )} */}
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }

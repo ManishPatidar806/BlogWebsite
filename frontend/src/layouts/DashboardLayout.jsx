@@ -21,7 +21,8 @@ const sidebarLinks = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/my-posts', icon: FileText, label: 'My Posts' },
   { to: '/courses', icon: GraduationCap, label: 'Courses' },
-  { to: '/bookmarks', icon: Bookmark, label: 'Bookmarks' },
+  // Commented out bookmarks
+  // { to: '/bookmarks', icon: Bookmark, label: 'Bookmarks' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 

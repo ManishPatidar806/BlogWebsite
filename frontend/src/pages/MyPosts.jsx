@@ -271,6 +271,7 @@ export default function MyPosts() {
                           <Eye className="w-3.5 h-3.5" />
                           {post.views_count || 0}
                         </span>
+                        {/* Commented out like/comment stats
                         <span className="flex items-center gap-1">
                           <Heart className="w-3.5 h-3.5" />
                           {post.likes_count || 0}
@@ -279,6 +280,7 @@ export default function MyPosts() {
                           <MessageCircle className="w-3.5 h-3.5" />
                           {post.comments_count || 0}
                         </span>
+                        */}
                       </>
                     )}
                   </div>
